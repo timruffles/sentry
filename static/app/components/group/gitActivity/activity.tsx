@@ -2,44 +2,38 @@ import {Fragment} from 'react';
 import styled from '@emotion/styled';
 
 import Button from 'app/components/button';
-import Confirm from 'app/components/confirm';
 import ExternalLink from 'app/components/links/externalLink';
 import {IconClose} from 'app/icons/iconClose';
 import {t} from 'app/locale';
 import space from 'app/styles/space';
 
 import Status from './status';
+import {GitActivity} from '.';
 
 // https://docs.github.com/en/rest/reference/pulls
-type GitActivity = React.ComponentProps<typeof Status> & {
-  id: string;
-  url: string;
-  title: string;
-  onUnlink: (id: string) => Promise<void>;
+type Props = {
+  gitActivity: GitActivity;
+  onUnlink: (gitActivity: GitActivity) => Promise<void>;
 };
 
-function Activity({id, url, title, state, onUnlink}: GitActivity) {
+function Activity({gitActivity, onUnlink}: Props) {
   return (
     <Fragment>
       <StatusColumn>
-        <Status state={state} />
+        <Status state={gitActivity.state} />
       </StatusColumn>
       <Column>
-        <ExternalLink href={url}>{title}</ExternalLink>
+        <ExternalLink href={gitActivity.url}>{gitActivity.title}</ExternalLink>
       </Column>
       <ActionColumn>
-        <Confirm
-          onConfirm={() => onUnlink(id)}
-          message={t('Are you sure you want to unlink this Pull Request from the issue?')}
-        >
-          <StyledButton
-            size="zero"
-            icon={<IconClose size="xs" />}
-            title={t('Unlink Pull Request')}
-            label={t('Unlink Pull Request')}
-            borderless
-          />
-        </Confirm>
+        <StyledButton
+          size="zero"
+          icon={<IconClose size="xs" />}
+          title={t('Unlink Pull Request')}
+          label={t('Unlink Pull Request')}
+          onClick={() => onUnlink(gitActivity)}
+          borderless
+        />
       </ActionColumn>
     </Fragment>
   );
